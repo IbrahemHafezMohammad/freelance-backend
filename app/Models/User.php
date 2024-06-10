@@ -19,6 +19,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'phone',
+        'gender',
+        'birthday',
         'email',
         'password',
     ];
@@ -41,4 +44,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //custom functions
+    public static function checkJobSeekerUserName($user_name)
+    {
+        $user = self::firstWhere('user_name', $user_name);
+
+        return (!$user || !$user->jobSeeker) ? null : $user;
+    }
+
+    public static function checkEmployerUserName($user_name)
+    {
+        $user = self::firstWhere('user_name', $user_name);
+
+        return (!$user || !$user->employer) ? null : $user;
+    }
 }
