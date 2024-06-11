@@ -16,8 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_2fa_enabled')->default(false);
-            $table->text('google2fa_secret')->nullable();
             $table->boolean('allow_posting')->default(true);
             $table->timestamps();
         });
