@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -20,10 +22,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'phone',
-        'gender',
+        'user_name',
         'birthday',
         'email',
         'password',
+        'gender',
     ];
 
     /**
@@ -58,5 +61,32 @@ class User extends Authenticatable
         $user = self::firstWhere('user_name', $user_name);
 
         return (!$user || !$user->employer) ? null : $user;
+    }
+
+    // relations
+
+    public function seeker(): HasOne
+    {
+        return $this->hasOne(Seeker::class);
+    }
+
+    public function employer(): HasOne
+    {
+        return $this->hasOne(Employer::class);
+    }
+
+    public function loginHistory(): HasMany
+    {
+        return $this->hasMany(LoginHistory::class);
+    }
+
+    public function signupHistory()
+    {
+        return $this->hasOne(LoginHistory::class)->oldestOfMany();
+    }
+
+    public function latestLoginHistory()
+    {
+        return $this->hasOne(LoginHistory::class)->latestOfMany();
     }
 }

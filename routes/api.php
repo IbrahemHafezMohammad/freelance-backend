@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SeekerController;
 use App\Http\Controllers\EmployerController;
 
 /*
@@ -15,6 +16,6 @@ use App\Http\Controllers\EmployerController;
 |
 */
 
-Route::prefix('employer')->group(function () {
-    Route::post('/login', [EmployerController::class, 'login']);
+Route::prefix('seeker')->group(function () {
+    Route::post('/create', [SeekerController::class, 'register']);
 });
