@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create(SeekerConstants::TABLE_NAME, function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->boolean('is_active')->default(true);
             $table->text('desc');
             $table->string('headline', 255)->nullable();
             $table->timestamps();

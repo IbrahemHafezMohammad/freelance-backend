@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginEmployerRequest extends FormRequest
+class LoginSeekerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class LoginEmployerRequest extends FormRequest
     {
         return [
             'user_name' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string']
         ];
     }
 
@@ -38,4 +38,5 @@ class LoginEmployerRequest extends FormRequest
 
         throw new HttpResponseException($response);
     }
+}
 }

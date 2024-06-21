@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create(EmployerConstants::TABLE_NAME, function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->boolean('is_active')->default(true);
             $table->boolean('allow_posting')->default(true);
             $table->timestamps();
         });

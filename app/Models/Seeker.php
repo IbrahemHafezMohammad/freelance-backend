@@ -12,7 +12,6 @@ class Seeker extends Model
 
     protected $fillable = [
         "user_id",
-        "is_active",
         "desc",
         "headline",
     ];

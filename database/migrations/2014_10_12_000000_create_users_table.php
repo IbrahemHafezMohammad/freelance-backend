@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('user_name')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->string('password');
             $table->tinyInteger('gender')->default(UserConstants::GENDER_UNKNOWN);
             $table->date('birthday')->nullable();
-            $table->rememberToken();
             $table->timestamps();
         });
     }

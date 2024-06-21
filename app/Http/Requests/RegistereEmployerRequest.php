@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\EmailRegex;
 use App\Rules\PhoneRegex;
 use App\Rules\PasswordRegex;
 use App\Rules\UserNameRegex;
@@ -13,7 +12,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class RegisterSeekerRequest extends FormRequest
+class RegistereEmployerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -38,9 +37,14 @@ class RegisterSeekerRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'integer', Rule::in(array_keys(UserConstants::getGenders()))],
             'language' => ['required', 'integer', Rule::in(array_keys(GlobalConstants::getLanguages()))],
-            'headline' => ['required', 'string', 'max:255'],
-            'desc' => ['required', 'string', 'max:500'],
             'birthday' => 'date_format:Y-m-d H:i:s',
+        ];
+    }
+
+    public function getEmployerData($validated)
+    {
+        return [
+            'allow_positing' => true,
         ];
     }
 
@@ -59,13 +63,6 @@ class RegisterSeekerRequest extends FormRequest
         ];
     }
 
-    public function getSeekerData($validated)
-    {
-        return [
-            'desc' => $validated['desc'],
-            'headline' => $validated['headline'],
-        ];
-    }
 
     protected function failedValidation(Validator $validator)
     {

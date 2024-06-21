@@ -17,5 +17,11 @@ use App\Http\Controllers\EmployerController;
 */
 
 Route::prefix('seeker')->group(function () {
-    Route::post('/create', [SeekerController::class, 'register']);
+    Route::post('/register', [SeekerController::class, 'register']);
+    Route::post('/login', [SeekerController::class,'login']);
+});
+
+Route::prefix('employer')->group(function () {
+    Route::post('/register', [EmployerController::class, 'register']);
+    // Route::post('/login', [EmployerController::class,'login']);
 });

@@ -6,9 +6,28 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginEmployerRequest;
+use App\Services\WebService\WebRequestService;
+use App\Http\Requests\RegistereEmployerRequest;
 
 class EmployerController extends Controller
 {
+    public function register(RegistereEmployerRequest $request)
+    {
+        $validated = $request->validated();
+        $user = User::create($request->getUserData($validated));
+        $employerData = $request->getEmployerData($validated);
+        $employer = $user->employer()->create($employerData);
+        $webRequestService = new WebRequestService($request);
+        $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
+
+        return response()->json([
+            'user_id' => $user->id,
+            'status' => true,
+            'message' => 'EMPLOYER_CREATED_SUCCESSFULLY',
+            'token' => $user->createToken("API TOKEN")->plainTextToken
+        ], 200);
+    }
+
     public function login(LoginEmployerRequest $request)
     {
         $validated = $request->validated();
@@ -20,58 +39,52 @@ class EmployerController extends Controller
             ], 404);
         }
 
-        $permissionArray = $user->getAllPermissions()->pluck('name');
-        
-        $clientIP = $request->ip();
-
-        if (!$user->verifyPassword($validated['password'])) {
-            return response()->json([
-                'status' => false,
-                'message' => 'PASSWORD_INCORRECT'
-            ], 403);
-        }
-
-        if (!$user->employer->status) {
+        if (!$user->is_active) {
             return response()->json([
                 'status' => false,
                 'message' => 'ACCOUNT_INACTIVE'
             ], 402);
         }
 
-        if ($user->employer->is_2fa_enabled) {
+        $attempts = $this->incrementLoginAttempts($user->id);
 
-            if (!$request->otp) {
-
-                return response()->json([
-                    'status' => false,
-                    'message' => 'OTP_REQUIRED',
-                ], 422);
-            }
-
-            if (!$user->employer->verifyOTP($validated['otp'])) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'OTP_INCORRECT'
-                ], 403);
-            }
+        // Check if login attempts exceeded
+        if ($attempts > 10) {
+            return response()->json([
+                'status' => false,
+                'message' => 'LOGIN_ATTEMPTS_EXCEEDED'
+            ], 403);
         }
+
+        if (!$user->verifyPassword($validated['password'])) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'PASSWORD_INCORRECT'
+            ], 403);
+        }
+
+        $this->resetLoginAttempts($user->id);
 
         $user->tokens()->delete();
 
-        $user->loginHistory()->create(['ip' => $clientIP]);
+        $webrequestservice = new WebRequestService($request);
 
-        $user->load('roles:name');
+        $request_ip = $webrequestservice->getIpAddress();
+
+        $user->loginHistory()->create(['ip' => $request_ip]);
+
+        $user_details = [
+            "user_id" => $user->id,
+            "user_name" => $user->user_name,
+            'payer_id' => $user->seeker->id,
+        ];
 
         return response()->json([
             'status' => true,
-            'message' => 'EMPLOYER_LOGGED_IN_SUCCESSFULLY',
+            'message' => 'USER_LOGGED_IN_SUCCESSFULLY',
             'token' => $user->createToken("API TOKEN")->plainTextToken,
-            'user_name' => $user->user_name,
-            'user_id' => $user->id,
-            'employer'  => $user->employer->id,
-            'is_2fa_enabled' => $user->employer->is_2fa_enabled,
-            'roles' => $user->roles->map(fn($item) => Arr::except($item, 'pivot')),
-            'permissions' => $permissionArray,
+            'data' => $user_details
         ], 200);
     }
 }
