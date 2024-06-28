@@ -23,5 +23,5 @@ Route::prefix('seeker')->group(function () {
 
 Route::prefix('employer')->group(function () {
     Route::post('/register', [EmployerController::class, 'register']);
-    // Route::post('/login', [EmployerController::class,'login']);
+    Route::post('/login', [EmployerController::class,'login']);
 });

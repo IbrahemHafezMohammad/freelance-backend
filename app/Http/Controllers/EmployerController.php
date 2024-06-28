@@ -77,7 +77,7 @@ class EmployerController extends Controller
         $user_details = [
             "user_id" => $user->id,
             "user_name" => $user->user_name,
-            'payer_id' => $user->seeker->id,
+            'payer_id' => $user->employer->id,
         ];
 
         return response()->json([
@@ -86,5 +86,21 @@ class EmployerController extends Controller
             'token' => $user->createToken("API TOKEN")->plainTextToken,
             'data' => $user_details
         ], 200);
+    }
+
+    private function incrementLoginAttempts($userId)
+    {
+        $cacheKey = 'login_attempts_' . $userId;
+        $loginAttempts = cache($cacheKey, 0) + 1;
+
+        cache([$cacheKey => $loginAttempts], now()->addHours(1)); // Increase attempts and set expiration time
+
+        return $loginAttempts;
+    }
+
+    private function resetLoginAttempts($userId)
+    {
+        $cacheKey = 'login_attempts_' . $userId;
+        cache()->forget($cacheKey); // Delete the cache
     }
 }

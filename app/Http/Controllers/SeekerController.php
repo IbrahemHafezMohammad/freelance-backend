@@ -101,7 +101,6 @@ class SeekerController extends Controller
     private function resetLoginAttempts($userId)
     {
         $cacheKey = 'login_attempts_' . $userId;
-        cache([$cacheKey => 0], now()->addHours(1)); // Reset attempts and set expiration time
-        // cache([$cacheKey => 0], now()->addMinutes(2)); // Reset attempts and set expiration time
+        cache()->forget($cacheKey); // Delete the cache
     }
 }
