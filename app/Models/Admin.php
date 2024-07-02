@@ -18,7 +18,6 @@ class Admin extends Model
     use HasFactory;
 
     protected $fillable = [
-        'lang',
         'user_id',
         'status',
         'is_2fa_enabled',
@@ -46,6 +45,7 @@ class Admin extends Model
         return $this->belongsTo(User::class);
     }
 
+    //custom function 
     public function scopeRole($query, $role)
     {
         $query->whereHas('user.roles', function (Builder $query) use ($role) {
@@ -60,6 +60,27 @@ class Admin extends Model
 
             $query->where(UserConstants::TABLE_NAME . '.user_name', 'like', '%' . $user_name . '%');
         });
+    }
+
+    public static function getAdminsWithUserAndRoles($searchParams)
+    {
+        $query = Admin::with([
+            'user' => function ($query) {
+                $query->with(['signupHistory' , 'latestLoginHistory', 'roles:name'])->select(['id', 'name', 'user_name', 'phone']);
+            },
+        ]);
+
+        if (array_key_exists('role', $searchParams)) {
+
+            $query->role($searchParams['role']);
+        }
+
+        if (array_key_exists('user_name', $searchParams)) {
+
+            $query->userName($searchParams['user_name']);
+        }
+
+        return $query;
     }
 
     //check 2FA

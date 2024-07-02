@@ -7,11 +7,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginEmployerRequest;
 use App\Services\WebService\WebRequestService;
-use App\Http\Requests\RegistereEmployerRequest;
+use App\Http\Requests\RegisterEmployerRequest;
 
 class EmployerController extends Controller
 {
-    public function register(RegistereEmployerRequest $request)
+    public function register(RegisterEmployerRequest $request)
     {
         $validated = $request->validated();
         $user = User::create($request->getUserData($validated));

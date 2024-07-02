@@ -6,7 +6,9 @@ namespace App\Models;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +17,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles; // HasPermissions , MustVerifyEmail
 
     /**
      * The attributes that are mass assignable.
@@ -93,6 +95,13 @@ class User extends Authenticatable
         return (!$user || !$user->seeker) ? null : $user;
     }
 
+    public static function checkAdminUserName($user_name)
+    {
+        $user = self::firstWhere('user_name', $user_name);
+
+        return (!$user || !$user->admin) ? null : $user;
+    }
+    
     public static function checkEmployerUserName($user_name)
     {
         $user = self::firstWhere('user_name', $user_name);
