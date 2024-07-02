@@ -115,7 +115,7 @@ class AdminController extends Controller
     public function toggleStatus(Admin $admin)
     {
         if ($admin->update(['status' => !$admin->status])) {
-            AdminLogService::createLog('Admin ' . $admin->user->user_name . ' status is updated');
+            AdminLog::createLog('Admin ' . $admin->user->user_name . ' status is updated');
 
             return response()->json([
                 'status' => true,

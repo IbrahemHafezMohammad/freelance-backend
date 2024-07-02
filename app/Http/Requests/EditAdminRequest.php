@@ -6,6 +6,7 @@ use App\Rules\PhoneRegex;
 use App\Rules\UserNameRegex;
 use Illuminate\Validation\Rule;
 use App\Constants\UserConstants;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditAdminRequest extends FormRequest
@@ -15,7 +16,7 @@ class EditAdminRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::user()->can('edit-admin');
     }
 
     /**
