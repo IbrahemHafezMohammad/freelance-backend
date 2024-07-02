@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ListAdminRequest extends FormRequest
@@ -11,18 +12,19 @@ class ListAdminRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::user()->can('list-admin');
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            //
+            'role' => 'string',
+            'user_name' => 'string',
         ];
     }
 }
