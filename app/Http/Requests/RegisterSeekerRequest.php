@@ -66,14 +66,4 @@ class RegisterSeekerRequest extends FormRequest
             'headline' => $validated['headline'],
         ];
     }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $response = response()->json([
-            'status' => false,
-            'message' => $validator->errors(),
-        ], 422);
-
-        throw new HttpResponseException($response);
-    }
 }

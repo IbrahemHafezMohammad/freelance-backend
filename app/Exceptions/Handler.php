@@ -6,6 +6,7 @@ use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -57,6 +58,15 @@ class Handler extends ExceptionHandler
                     'message' => 'USER_TOKEN_NOT_VALID',
                     'token' => null
                 ], 401);
+            }
+        });
+
+        $this->renderable(function (ValidationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $e->validator->errors(),
+                ], 422);
             }
         });
 

@@ -50,15 +50,4 @@ class StoreAdminRequest extends FormRequest
             'remark' => $validated['remark'] ?? null,
         ];
     }
-
-    protected function failedValidation(Validator $validator)
-    {
-
-        $response = response()->json([
-            'status' => false,
-            'message' => $validator->errors(),
-        ], 422);
-
-        throw new HttpResponseException($response);
-    }
 }

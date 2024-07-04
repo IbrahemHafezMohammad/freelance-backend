@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\AdminLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\EditAdminRequest;
 use App\Http\Requests\ListAdminRequest;
 use App\Http\Requests\LoginAdminRequest;
@@ -129,4 +130,78 @@ class AdminController extends Controller
         ], 400);
     }
 
+    public function createTwoFactorAuth()
+    {
+        $admin = Auth::user()->admin;
+
+        if (!$admin->is_2fa_enabled) {
+
+            $qrCode = $admin->create2fA();
+            AdminLog::createLog('Admin ' . $admin->user->user_name . ' 2FA is created');
+
+            return response()->json([
+                'status' => true,
+                'message' => '2FA_CREATED_SUCCESSFULLY',
+                'qr_code_url' => $qrCode,
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => '2FA_ALREADY_ENABLED',
+        ], 403);
+    }
+
+    public function disableTwoFactorAuth(Request $request)
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = auth()->user;
+
+        $admin = $user->admin;
+
+        if (!$user->verifyPassword($validated['password'])) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'PASSWORD_INCORRECT'
+            ], 403);
+        }
+
+        $admin->is_2fa_enabled = false;
+        $admin->save();
+        AdminLog::createLog('Admin ' . $admin->user->user_name . ' 2FA is disabled');
+
+        return response()->json([
+            'status' => true,
+            'message' => '2FA_DISABLED_SUCCESSFULLY',
+        ]);
+    }
+
+    public function firstOTPCheck(Request $request)
+    {
+        $validated = $request->validate([
+            'otp' => ['required', 'string'],
+        ]);
+
+        $admin = Auth::user()->admin;
+
+        if (!$admin->verifyOTP($validated['otp'])) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'OTP_INCORRECT'
+            ], 403);
+        }
+
+        $admin->is_2fa_enabled = true;
+        $admin->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => '2FA_ENABLED_SUCCESSFULLY',
+        ]);
+    }
 }

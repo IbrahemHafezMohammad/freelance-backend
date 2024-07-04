@@ -56,36 +56,36 @@ class User extends Authenticatable
     protected function password(): Attribute
     {
         return new Attribute(
-            set: fn($value) => Hash::make($value)
+            set: fn ($value) => Hash::make($value)
         );
     }
 
-     // relations
+    // relations
 
-     public function seeker(): HasOne
-     {
-         return $this->hasOne(Seeker::class);
-     }
- 
-     public function employer(): HasOne
-     {
-         return $this->hasOne(Employer::class);
-     }
- 
-     public function loginHistory(): HasMany
-     {
-         return $this->hasMany(LoginHistory::class);
-     }
- 
-     public function signupHistory()
-     {
-         return $this->hasOne(LoginHistory::class)->oldestOfMany();
-     }
- 
-     public function latestLoginHistory()
-     {
-         return $this->hasOne(LoginHistory::class)->latestOfMany();
-     }
+    public function seeker(): HasOne
+    {
+        return $this->hasOne(Seeker::class);
+    }
+
+    public function employer(): HasOne
+    {
+        return $this->hasOne(Employer::class);
+    }
+
+    public function loginHistory(): HasMany
+    {
+        return $this->hasMany(LoginHistory::class);
+    }
+
+    public function signupHistory()
+    {
+        return $this->hasOne(LoginHistory::class)->oldestOfMany();
+    }
+
+    public function latestLoginHistory()
+    {
+        return $this->hasOne(LoginHistory::class)->latestOfMany();
+    }
 
     //custom functions
     public static function checkSeekerUserName($user_name)
@@ -101,7 +101,7 @@ class User extends Authenticatable
 
         return (!$user || !$user->admin) ? null : $user;
     }
-    
+
     public static function checkEmployerUserName($user_name)
     {
         $user = self::firstWhere('user_name', $user_name);
@@ -113,6 +113,4 @@ class User extends Authenticatable
     {
         return Hash::check($password, $this->password);
     }
-
-   
 }

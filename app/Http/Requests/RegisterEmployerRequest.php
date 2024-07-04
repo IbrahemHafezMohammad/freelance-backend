@@ -62,15 +62,4 @@ class RegisterEmployerRequest extends FormRequest
             'is_active' => true,
         ];
     }
-
-
-    protected function failedValidation(Validator $validator)
-    {
-        $response = response()->json([
-            'status' => false,
-            'message' => $validator->errors(),
-        ], 422);
-
-        throw new HttpResponseException($response);
-    }
 }
