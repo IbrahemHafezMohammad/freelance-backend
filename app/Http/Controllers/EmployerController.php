@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\LoginEmployerRequest;
-use App\Services\WebService\WebRequestService;
 use App\Http\Requests\RegisterEmployerRequest;
+use App\Services\WebService\WebRequestService;
 
 class EmployerController extends Controller
 {
@@ -19,6 +20,8 @@ class EmployerController extends Controller
         $employer = $user->employer()->create($employerData);
         $webRequestService = new WebRequestService($request);
         $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
+
+        event(new Registered($user));
 
         return response()->json([
             'user_id' => $user->id,

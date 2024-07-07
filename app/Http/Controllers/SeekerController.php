@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\LoginSeekerRequest;
 use App\Http\Requests\RegisterSeekerRequest;
 use App\Services\WebService\WebRequestService;
@@ -19,6 +20,8 @@ class SeekerController extends Controller
         $seeker = $user->seeker()->create($seekerData);
         $webRequestService = new WebRequestService($request);
         $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
+
+        event(new Registered($user));
 
         return response()->json([
             'user_id' => $user->id,

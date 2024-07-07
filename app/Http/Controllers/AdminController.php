@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\AdminLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\EditAdminRequest;
 use App\Http\Requests\ListAdminRequest;
 use App\Http\Requests\LoginAdminRequest;
@@ -22,6 +23,8 @@ class AdminController extends Controller
         $user->admin()->create();
 
         AdminLog::createLog('New Admin created with name: ' . $user->user_name);
+
+        event(new Registered($user));
 
         return response()->json([
             'status' => true,

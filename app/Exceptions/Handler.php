@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -33,6 +34,15 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (InvalidSignatureException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'INVALID_SIGNATURE'
+                ], 403);
+            }
         });
 
         $this->renderable(function (NotFoundHttpException $e, Request $request) {
