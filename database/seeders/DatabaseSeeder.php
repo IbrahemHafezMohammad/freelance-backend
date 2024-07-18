@@ -42,7 +42,13 @@ class DatabaseSeeder extends Seeder
             'list-admin',
             'create-admin',
             'create-role',
-            'create-category'
+            'create-category',
+            'update-category',
+            'view-categories',
+            'toggle-category-status',
+            'create-skill',
+            'update-skill',
+            'view-skills'
         ];
 
         $permissions = [];

@@ -24,8 +24,6 @@ class JobPost extends Model
         'min_rate',
         'max_rate',
         'payment_type',
-        'start_time',
-        'end_time',
         'bid_start_time',
         'bid_end_time',
     ];

@@ -25,8 +25,6 @@ return new class extends Migration
             $table->decimal('min_rate', GlobalConstants::DECIMAL_TOTALS, GlobalConstants::DECIMAL_PRECISION);
             $table->decimal('max_rate', GlobalConstants::DECIMAL_TOTALS, GlobalConstants::DECIMAL_PRECISION);
             $table->integer('payment_type');
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
             $table->dateTime('bid_start_time');
             $table->dateTime('bid_end_time');
             $table->timestamps();

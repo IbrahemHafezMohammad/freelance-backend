@@ -16,7 +16,7 @@ class EnsureUserIsEmployer
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!(Auth::user()->employer && Auth::user()->admin->status)) {
+        if(!(Auth::user()->employer && Auth::user()->is_active)) {
 
             return response()->json([
                 'status' => false,

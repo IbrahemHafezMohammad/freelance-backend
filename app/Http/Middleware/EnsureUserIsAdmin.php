@@ -17,7 +17,7 @@ class EnsureUserIsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         
-        if(!(Auth::user()->admin && Auth::user()->admin->status)) {
+        if(!(Auth::user()->admin && Auth::user()->is_active)) {
 
             return response()->json([
                 'status' => false,

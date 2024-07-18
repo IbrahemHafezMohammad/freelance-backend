@@ -19,7 +19,6 @@ class Admin extends Model
 
     protected $fillable = [
         'user_id',
-        'status',
         'is_2fa_enabled',
         'google2fa_secret'
     ];

@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SkillController;
 use App\Http\Controllers\SeekerController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmployerController;
+use App\Http\Controllers\JobPostController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -69,7 +71,9 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], f
 
     Route::prefix('employer')->group(function () { 
 
-        
+        Route::prefix('jobs')->group(function () {
+            Route::post('/post', [JobPostController::class, 'post']);
+        });
     });
 });
 
@@ -85,8 +89,17 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.admin', 'compress.response
         Route::post('/2fa/first/check', [AdminController::class, 'firstOTPCheck']);
         Route::post('/disable/2fa', [AdminController::class, 'disableTwoFactorAuth']);
         
-        Route::prefix('skills')->group(function () {
+        Route::prefix('category')->group(function () {
             Route::post('/create', [CategoryController::class, 'create']);
+            Route::post('/update/{category}', [CategoryController::class, 'update']);
+            Route::get('/fetch', [CategoryController::class, 'fetch']);
+            Route::put('/toggle/status/{category}', [CategoryController::class, 'toggleStatus']);
+        });
+
+        Route::prefix('skill')->group(function () {
+            Route::post('/create', [SkillController::class, 'create']);
+            Route::put('/update/{skill}', [SkillController::class, 'update']);
+            Route::get('/fetch', [SkillController::class, 'fetch']);
         });
 
         Route::prefix('roles')->group(function () {
