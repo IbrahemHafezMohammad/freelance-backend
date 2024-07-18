@@ -4,9 +4,6 @@ namespace App\Constants;
 
 class GlobalConstants
 {
-    //images 
-    const USER_IMAGES_PATH = 'public/users';
-
     // Project Decimal Precision
 
     const DECIMAL_TOTALS = 26;

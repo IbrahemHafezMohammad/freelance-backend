@@ -100,6 +100,10 @@ class AdminController extends Controller
         $webrequestservice = new WebRequestService($request);
         $user->loginHistory()->create(['ip' => $webrequestservice->getIpAddress()]);
 
+        $permissionArray = $user->getAllPermissions()->pluck('name');
+
+        $user->load('roles:name');
+
         return response()->json([
             'status' => true,
             'message' => 'ADMIN_LOGGED_IN_SUCCESSFULLY',
@@ -108,6 +112,7 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'admin_id'  => $user->admin->id,
             'is_2fa_enabled' => $user->admin->is_2fa_enabled,
+            'permissions' => $permissionArray,
         ], 200);
     }
 
@@ -161,7 +166,7 @@ class AdminController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $user = auth()->user;
+        $user = auth()->user();
 
         $admin = $user->admin;
 

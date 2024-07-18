@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SeekerController;
+use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmployerController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -63,16 +65,30 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     ], 200);
 })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
     
-Route::group(['middleware' => ['auth:sanctum', 'scope.admin', 'whitelist.ip', 'compress.response', 'verified']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], function () {
+
+    Route::prefix('employer')->group(function () { 
+
+        
+    });
+});
+
+Route::group(['middleware' => ['auth:sanctum', 'scope.admin', 'compress.response', 'verified']], function () {
 
     Route::prefix('admin')->group(function () { 
 
+        Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
+        
         Route::post('/create', [AdminController::class, 'create']);
         Route::put('/edit/{admin}', [AdminController::class, 'edit']);
         Route::get('/create/2fa', [AdminController::class, 'createTwoFactorAuth']);
         Route::post('/2fa/first/check', [AdminController::class, 'firstOTPCheck']);
         Route::post('/disable/2fa', [AdminController::class, 'disableTwoFactorAuth']);
         
+        Route::prefix('skills')->group(function () {
+            Route::post('/create', [CategoryController::class, 'create']);
+        });
+
         Route::prefix('roles')->group(function () {
             Route::get('/index', [RoleController::class, 'index']);
             Route::post('/store', [RoleController::class, 'store']);

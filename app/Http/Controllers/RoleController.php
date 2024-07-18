@@ -6,7 +6,6 @@ use App\Models\AdminLog;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
-use App\Services\LogService\AdminLogService;
 
 class RoleController extends Controller
 {

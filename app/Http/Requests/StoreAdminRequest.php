@@ -35,7 +35,6 @@ class StoreAdminRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', Rule::unique(UserConstants::TABLE_NAME, 'email')],
             'phone' => ['required', Rule::unique(UserConstants::TABLE_NAME, 'phone')],
-            'remark' => ['nullable', 'string'],
         ];
     }
 
@@ -47,7 +46,7 @@ class StoreAdminRequest extends FormRequest
             'password' => $validated['password'],
             'phone' => $validated['phone'],
             'name' => $validated['name'],
-            'remark' => $validated['remark'] ?? null,
+            'email' => $validated['email'],
         ];
     }
 }

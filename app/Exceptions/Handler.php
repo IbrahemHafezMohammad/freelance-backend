@@ -56,7 +56,7 @@ class Handler extends ExceptionHandler
         $this->renderable(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'message' => 'This action is unauthorized'
+                    'message' => 'THIS_ACTION_IS_UNAUTHORIZED'
                 ], 403);
             }
         });
