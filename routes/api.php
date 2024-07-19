@@ -74,6 +74,8 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], f
         Route::prefix('jobs')->group(function () {
             Route::post('/post', [JobPostController::class, 'post']);
         });
+
+        Route::get('dashboard', [EmployerController::class,'dashboard']);
     });
 });
 

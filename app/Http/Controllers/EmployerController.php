@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\JobPost;
+use App\Models\Employer;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\LoginEmployerRequest;
+use App\Http\Requests\ViewEmployerDashboard;
 use App\Http\Requests\RegisterEmployerRequest;
 use App\Services\WebService\WebRequestService;
 
@@ -105,5 +109,17 @@ class EmployerController extends Controller
     {
         $cacheKey = 'login_attempts_' . $userId;
         cache()->forget($cacheKey); // Delete the cache
+    }
+
+    public function dashboard(ViewEmployerDashboard $request)
+    {
+        $user = auth()->user()->load(['employer:id,user_id']);
+        $posts = JobPost::getPosts($request->validated(), $user)->paginate(10);
+
+        return response()->json([
+            'status' => true,
+            'user_data' => $user,
+            'posts' => $posts,
+        ]);
     }
 }
