@@ -14,21 +14,37 @@ class SeekerController extends Controller
 {
     public function register(RegisterSeekerRequest $request)
     {
-        $validated = $request->validated();
-        $user = User::create($request->getUserData($validated));
-        $seekerData = $request->getSeekerData($validated);
-        $seeker = $user->seeker()->create($seekerData);
-        $webRequestService = new WebRequestService($request);
-        $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
+        DB::beginTransaction();
+        try {
+            $validated = $request->validated();
+            $user = User::create($request->getUserData($validated));
+            // $seekerData = $request->getSeekerData($validated);
+            $seeker = $user->seeker()->create();
+            $webRequestService = new WebRequestService($request);
+            $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
 
-        event(new Registered($user));
+            event(new Registered($user));
 
-        return response()->json([
-            'user_id' => $user->id,
-            'status' => true,
-            'message' => 'SEEKER_CREATED_SUCCESSFULLY',
-            'token' => $user->createToken("API TOKEN")->plainTextToken
-        ], 200);
+            DB::commit();
+            return response()->json([
+                'user_id' => $user->id,
+                'phone' => $user->phone,
+                'name' => $user->name,
+                'birthday' => $user->birthday,
+                'email' => $user->email,
+                'headline' => $user->seeker->headline,
+                'desc' => $user->seeker->desc,
+                'status' => true,
+                'message' => 'SEEKER_CREATED_SUCCESSFULLY',
+                'token' => $user->createToken("API TOKEN")->plainTextToken
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'UNEXPECTED_RESPONSE',
+            ], 401);
+        }
     }
 
     public function login(LoginSeekerRequest $request)

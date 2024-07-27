@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'password' => $password,
             'name' => 'ibrahem',
             'phone' => '+963992861407',
-            'email' => 'ibrahem.hafez.mohammad@gmail.com',
+            'email' => 'ibrahem.mohammad.acm.999@gmail.com',
             'gender' => UserConstants::GENDER_MALE,
             'email_verified_at' => now()->toDateTimeString(),
         ]);

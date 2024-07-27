@@ -37,9 +37,8 @@ class RegisterSeekerRequest extends FormRequest
             'phone' => ['required', 'string', Rule::unique(UserConstants::TABLE_NAME, 'phone'), new PhoneRegex],
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'integer', Rule::in(array_keys(UserConstants::getGenders()))],
-            'language' => ['required', 'integer', Rule::in(array_keys(GlobalConstants::getLanguages()))],
-            'headline' => ['required', 'string', 'max:255'],
-            'desc' => ['required', 'string', 'max:500'],
+            // 'headline' => ['required', 'string', 'max:255'],
+            // 'desc' => ['required', 'string', 'max:500'],
             'birthday' => 'date_format:Y-m-d H:i:s',
         ];
     }
@@ -52,18 +51,17 @@ class RegisterSeekerRequest extends FormRequest
             'phone' => $validated['phone'],
             'gender' => $validated['gender'] ?? UserConstants::GENDER_UNKNOWN,
             'name' => $validated['name'],
-            'language' => $validated['language'],
             'birthday' => $validated['birthday'] ?? null,
             'email' => $validated['email'],
             'is_active' => true,
         ];
     }
 
-    public function getSeekerData($validated)
-    {
-        return [
-            'desc' => $validated['desc'],
-            'headline' => $validated['headline'],
-        ];
-    }
+    // public function getSeekerData($validated)
+    // {
+    //     return [
+    //         'desc' => $validated['desc'],
+    //         'headline' => $validated['headline'],
+    //     ];
+    // }
 }

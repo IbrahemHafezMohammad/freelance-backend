@@ -46,12 +46,11 @@ Route::get('/email/verify', function () {
         'status' => false,
         'message' => 'EMAIL_NOT_VERIFIED',
     ], 401);
-
 })->middleware('auth:sanctum')->name('verification.notice');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
- 
+
     return response()->json([
         'status' => true,
         'message' => 'EMAIL_VERIFICATION_LINK_SENT',
@@ -60,37 +59,37 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
- 
+
     return response()->json([
         'status' => true,
         'message' => 'EMAIL_VERIFIED',
     ], 200);
 })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
-    
+
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], function () {
 
-    Route::prefix('employer')->group(function () { 
+    Route::prefix('employer')->group(function () {
 
         Route::prefix('jobs')->group(function () {
             Route::post('/post', [JobPostController::class, 'post']);
         });
 
-        Route::get('dashboard', [EmployerController::class,'dashboard']);
+        Route::get('dashboard', [EmployerController::class, 'dashboard']);
     });
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'scope.admin', 'compress.response', 'verified']], function () {
 
-    Route::prefix('admin')->group(function () { 
+    Route::prefix('admin')->group(function () {
 
         Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
-        
+
         Route::post('/create', [AdminController::class, 'create']);
         Route::put('/edit/{admin}', [AdminController::class, 'edit']);
         Route::get('/create/2fa', [AdminController::class, 'createTwoFactorAuth']);
         Route::post('/2fa/first/check', [AdminController::class, 'firstOTPCheck']);
         Route::post('/disable/2fa', [AdminController::class, 'disableTwoFactorAuth']);
-        
+
         Route::prefix('category')->group(function () {
             Route::post('/create', [CategoryController::class, 'create']);
             Route::post('/update/{category}', [CategoryController::class, 'update']);
