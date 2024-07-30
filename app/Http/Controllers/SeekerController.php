@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\LoginSeekerRequest;
 use App\Http\Requests\RegisterSeekerRequest;
@@ -35,6 +36,7 @@ class SeekerController extends Controller
                 'headline' => $user->seeker->headline,
                 'desc' => $user->seeker->desc,
                 'status' => true,
+                'email_verified_at' => $user->email_verified_at,
                 'message' => 'SEEKER_CREATED_SUCCESSFULLY',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
