@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\UserConstants;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Log;
@@ -54,6 +55,29 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    private static $withoutAppends = [];
+
+    protected $appends = ['gender_name'];
+
+    protected function getArrayableAppends()
+    {
+        $this->appends = array_diff($this->appends, self::$withoutAppends);
+
+        return parent::getArrayableAppends();
+    }
+
+    public function scopeWithoutAppendedAttributes($query, $appends = [])
+    {
+        self::$withoutAppends = empty($appends) ? $this->appends : $appends;
+
+        return $query;
+    }
+
+    public function getGenderNameAttribute()
+    {
+        return UserConstants::getGender($this->gender);
+    }
 
     protected function password(): Attribute
     {

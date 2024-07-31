@@ -37,6 +37,8 @@ class SeekerController extends Controller
                 'email' => $user->email,
                 'headline' => $user->seeker->headline,
                 'desc' => $user->seeker->desc,
+                'gender' => $user->gender,
+                'gender_name' => $user->gender_name,
                 'status' => true,
                 'email_verified_at' => $user->email_verified_at,
                 'message' => 'SEEKER_CREATED_SUCCESSFULLY',
@@ -111,6 +113,8 @@ class SeekerController extends Controller
             'email' => $user->email,
             'headline' => $user->seeker->headline,
             'desc' => $user->seeker->desc,
+            'gender' => $user->gender,
+            'gender_name' => $user->gender_name,
             'status' => true,
             'email_verified_at' => $user->email_verified_at,
             'message' => 'USER_LOGGED_IN_SUCCESSFULLY',
@@ -142,7 +146,7 @@ class SeekerController extends Controller
         return response()->json([
             'status' => true,
             'user_data' => $user,
-            'posts' => $posts,
+            'applications' => $posts,
         ]);
     }
 }
