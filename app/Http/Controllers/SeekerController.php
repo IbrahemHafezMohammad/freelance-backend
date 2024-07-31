@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\LoginSeekerRequest;
+use App\Http\Requests\ViewSeekerDashboard;
 use App\Http\Requests\RegisterSeekerRequest;
+use App\Models\JobApplication;
 use App\Services\WebService\WebRequestService;
 
 class SeekerController extends Controller
@@ -130,5 +132,17 @@ class SeekerController extends Controller
     {
         $cacheKey = 'login_attempts_' . $userId;
         cache()->forget($cacheKey); // Delete the cache
+    }
+
+    public function dashboard(ViewSeekerDashboard $request)
+    {
+        $user = $request->user()->load(['seeker']);
+        $posts = JobApplication::getApplications($request->validated(), $user)->paginate(10);
+
+        return response()->json([
+            'status' => true,
+            'user_data' => $user,
+            'posts' => $posts,
+        ]);
     }
 }

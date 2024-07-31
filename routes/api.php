@@ -63,32 +63,30 @@ Route::post('/email/verification-notification', function (Request $request) {
     ], 200);
 })->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');
 
-Route::get('/email/verify', [UserController::class, 'verifyEmail'])->middleware(['auth:sanctum'])->name('verification.verify');
+Route::post('/email/verify', [UserController::class, 'verifyEmail'])->middleware(['auth:sanctum'])->name('verification.verify');
 
-// Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-//     $request->fulfill();
-
-//     return response()->json([
-//         'status' => true,
-//         'message' => 'EMAIL_VERIFIED',
-//     ], 200);
-// })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
-
-Route::group(['middleware' => ['auth:sanctum', 'scope.seeker', 'verified']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
 
     Route::prefix('seeker')->group(function () {
+        Route::get('dashboard', [SeekerController::class, 'dashboard']);
 
-    });
+        Route::group(['middleware' => ['verified']], function () {
+
+        });
+    }); 
 });
 
-Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
 
     Route::prefix('employer')->group(function () {
 
-        Route::prefix('jobs')->group(function () {
-            Route::post('/post', [JobPostController::class, 'post']);
+        Route::group(['middleware' => ['verified']], function () {
+            
+            Route::prefix('jobs')->group(function () {
+                Route::post('/post', [JobPostController::class, 'post']);
+            });
         });
-
+       
         Route::get('dashboard', [EmployerController::class, 'dashboard']);
     });
 });
