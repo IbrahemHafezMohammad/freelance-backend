@@ -6,13 +6,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\SeekerController;
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmployerController;
-use App\Http\Controllers\JobPostController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -40,7 +41,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminController::class, 'login']);
 });
 
-Route::get('/email/verify', function () {
+//email/verify
+Route::get('/email/not/verified', function () {
     Log::info('request in email/verify');
     return response()->json([
         'status' => false,
@@ -49,7 +51,11 @@ Route::get('/email/verify', function () {
 })->middleware('auth:sanctum')->name('verification.notice');
 
 Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
+    $user = $request->user();
+    if (!is_null($user->email_verified_at)) {
+        return response()->json(['message' => 'EMAIL_ALREADY_VERIFIED'], 400);
+    }
+    $user->sendEmailVerificationNotification();
 
     return response()->json([
         'status' => true,
@@ -57,14 +63,23 @@ Route::post('/email/verification-notification', function (Request $request) {
     ], 200);
 })->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+Route::get('/email/verify', [UserController::class, 'verifyEmail'])->middleware(['auth:sanctum'])->name('verification.verify');
 
-    return response()->json([
-        'status' => true,
-        'message' => 'EMAIL_VERIFIED',
-    ], 200);
-})->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+// Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+//     $request->fulfill();
+
+//     return response()->json([
+//         'status' => true,
+//         'message' => 'EMAIL_VERIFIED',
+//     ], 200);
+// })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+
+Route::group(['middleware' => ['auth:sanctum', 'scope.seeker', 'verified']], function () {
+
+    Route::prefix('seeker')->group(function () {
+
+    });
+});
 
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer', 'verified']], function () {
 

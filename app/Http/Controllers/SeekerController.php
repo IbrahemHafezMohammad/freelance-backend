@@ -102,10 +102,17 @@ class SeekerController extends Controller
         ];
 
         return response()->json([
+            'user_id' => $user->id,
+            'phone' => $user->phone,
+            'name' => $user->name,
+            'birthday' => $user->birthday,
+            'email' => $user->email,
+            'headline' => $user->seeker->headline,
+            'desc' => $user->seeker->desc,
             'status' => true,
+            'email_verified_at' => $user->email_verified_at,
             'message' => 'USER_LOGGED_IN_SUCCESSFULLY',
-            'token' => $user->createToken("API TOKEN")->plainTextToken,
-            'data' => $user_details
+            'token' => $user->createToken("API TOKEN")->plainTextToken
         ], 200);
     }
 

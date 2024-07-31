@@ -16,7 +16,7 @@ class EnsureUserIsSeeker
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!(Auth::user()->seeker && Auth::user()->admin->status)) {
+        if(!(Auth::user()->seeker && Auth::user()->is_active)) {
 
             return response()->json([
                 'status' => false,
