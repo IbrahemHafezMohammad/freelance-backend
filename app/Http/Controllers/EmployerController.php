@@ -50,7 +50,7 @@ class EmployerController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'ACCOUNT_INACTIVE'
-            ], 402);
+            ], 403);
         }
 
         $attempts = $this->incrementLoginAttempts($user->id);
