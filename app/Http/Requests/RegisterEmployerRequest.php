@@ -36,8 +36,7 @@ class RegisterEmployerRequest extends FormRequest
             'phone' => ['required', 'string', Rule::unique(UserConstants::TABLE_NAME, 'phone'), new PhoneRegex],
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'integer', Rule::in(array_keys(UserConstants::getGenders()))],
-            'language' => ['required', 'integer', Rule::in(array_keys(GlobalConstants::getLanguages()))],
-            'birthday' => 'date_format:Y-m-d H:i:s',
+            'birthday' => ['nullable', 'date_format:Y-m-d H:i:s'],
         ];
     }
 
@@ -56,7 +55,6 @@ class RegisterEmployerRequest extends FormRequest
             'phone' => $validated['phone'],
             'gender' => $validated['gender'] ?? UserConstants::GENDER_UNKNOWN,
             'name' => $validated['name'],
-            'language' => $validated['language'],
             'birthday' => $validated['birthday'] ?? null,
             'email' => $validated['email'],
             'is_active' => true,

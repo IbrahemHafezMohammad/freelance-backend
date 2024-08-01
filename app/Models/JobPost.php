@@ -21,16 +21,11 @@ class JobPost extends Model
         'is_active',
         'status',
         'image',
-        'min_rate',
-        'max_rate',
-        'payment_type',
-        'bid_start_time',
-        'bid_end_time',
     ];
 
     private static $withoutAppends = [];
 
-    protected $appends = ['status_name', 'payment_type_name'];
+    protected $appends = ['status_name'];
 
     protected function getArrayableAppends()
     {
@@ -49,11 +44,6 @@ class JobPost extends Model
     public function getStatusNameAttribute()
     {
         return JobPostConstants::getStatus($this->status);
-    }
-
-    public function getPaymentTypeNameAttribute()
-    {
-        return JobPostConstants::getPaymentType($this->payment_type);
     }
 
     protected function image(): Attribute
@@ -95,31 +85,6 @@ class JobPost extends Model
             $query->status($searchParams['status']);
         }
 
-        if (array_key_exists('min_rate', $searchParams)) {
-
-            $query->minRate($searchParams['min_rate']);
-        }
-
-        if (array_key_exists('max_rate', $searchParams)) {
-
-            $query->maxRate($searchParams['max_rate']);
-        }
-
-        if (array_key_exists('payment_type', $searchParams)) {
-
-            $query->paymentType($searchParams['payment_type']);
-        }
-
-        if (array_key_exists('bid_start_time', $searchParams)) {
-
-            $query->bidStartTime($searchParams['bid_start_time']);
-        }
-
-        if (array_key_exists('bid_end_time', $searchParams)) {
-
-            $query->bidEndTime($searchParams['bid_end_time']);
-        }
-
         if (array_key_exists('create_at', $searchParams)) {
 
             $query->createAt($searchParams['create_at']);
@@ -143,31 +108,6 @@ class JobPost extends Model
     public function scopeStatus($query, $status)
     {
         $query->where('status', $status);
-    }
-
-    public function scopeMinRate($query, $min_rate)
-    {
-        $query->where('min_rate', '>=', $min_rate);
-    }
-
-    public function scopeMaxRate($query, $max_rate)
-    {
-        $query->where('max_rate', '>=', $max_rate);
-    }
-
-    public function scopePaymentType($query, $payment_type)
-    {
-        $query->where('payment_type', $payment_type);
-    }
-
-    public function scopeBidStartTime($query, $bid_start_time)
-    {
-        $query->where('bid_start_time', '>=', $bid_start_time);
-    }
-
-    public function scopeBidEndTime($query, $bid_end_time)
-    {
-        $query->where('bid_end_time', '>=', $bid_end_time);
     }
 
     public function scopeCreateAt($query, $created_at)
