@@ -76,6 +76,11 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
     }); 
 });
 
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/skills/dropdown', [SkillController::class, 'fetch']);
+    Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
+});
+
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
 
     Route::prefix('employer')->group(function () {
@@ -94,8 +99,6 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
 Route::group(['middleware' => ['auth:sanctum', 'scope.admin', 'compress.response', 'verified']], function () {
 
     Route::prefix('admin')->group(function () {
-
-        Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
 
         Route::post('/create', [AdminController::class, 'create']);
         Route::put('/edit/{admin}', [AdminController::class, 'edit']);

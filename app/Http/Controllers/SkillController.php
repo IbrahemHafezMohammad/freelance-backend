@@ -45,6 +45,6 @@ class SkillController extends Controller
         // if (!auth()->user()->can('view-skills')) {
         //     throw new AccessDeniedHttpException();
         // }
-        return Skill::all();
+        return Skill::orderBy('active_projects_count')->get();
     }
 }

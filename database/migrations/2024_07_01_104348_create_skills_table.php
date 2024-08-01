@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create(SkillConstants::TABLE_NAME, function (Blueprint $table) {
             $table->id();
             $table->string('name', '120')->unique();
-            $table->foreignId('category_id')->constrained(CategoryConstants::TABLE_NAME);
             $table->unsignedInteger('active_projects_count')->default(0); // sort depending on the one that have more active projects
             $table->timestamps();
         });

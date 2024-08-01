@@ -14,15 +14,10 @@ class Skill extends Model
 
     protected $fillable = [
         'name',
-        'category_id',
         'active_projects_count',
     ];
 
     //relationship
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     public function jobPosts(): BelongsToMany
     {

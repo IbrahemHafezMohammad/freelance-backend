@@ -70,7 +70,7 @@ class AdminController extends Controller
             ], 403);
         }
 
-        if (!$user->admin->status) {
+        if (!$user->is_active) {
             return response()->json([
                 'status' => false,
                 'message' => 'ACCOUNT_INACTIVE'

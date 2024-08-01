@@ -26,7 +26,6 @@ class CreateSkillRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', Rule::unique(SkillConstants::TABLE_NAME, 'name')],
-            'category_id' => ['required', 'integer', Rule::exists(CategoryConstants::TABLE_NAME,'id')],
         ];
     }
 
