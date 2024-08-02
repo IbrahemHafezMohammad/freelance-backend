@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ViewEmployerDashboard extends FormRequest
+class ListJobsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,11 @@ class ViewEmployerDashboard extends FormRequest
     public function rules(): array
     {
         return [
-            'desc' => ['nullable', 'string'],
             'title' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'boolean'],
-            'status' => ['nullable', 'integer'],
-            'created_at' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'employer' => ['nullable', 'string'],
+            'skills' => ['nullable', 'array'],
+            'skills.*' => ['integer'],
+            'create_at' => ['date_format:Y-m-d H:i:s'],
         ];
     }
 }

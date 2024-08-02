@@ -65,20 +65,23 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::post('/email/verify', [UserController::class, 'verifyEmail'])->middleware(['auth:sanctum'])->name('verification.verify');
 
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/skills/dropdown', [SkillController::class, 'fetch']);
+    Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
+});
+
 Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
 
     Route::prefix('seeker')->group(function () {
         Route::get('dashboard', [SeekerController::class, 'dashboard']);
+        Route::post('/update/{user}', [SeekerController::class, 'update']);
 
         Route::group(['middleware' => ['verified']], function () {
-
+            Route::prefix('jobs')->group(function () {
+                Route::post('/list', [JobPostController::class, 'list']);
+            });
         });
     }); 
-});
-
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/skills/dropdown', [SkillController::class, 'fetch']);
-    Route::post('/upload/file', [GeneralController::class, 'uploadFile']);
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {

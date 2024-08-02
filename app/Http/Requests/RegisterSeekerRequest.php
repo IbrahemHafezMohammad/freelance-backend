@@ -39,7 +39,7 @@ class RegisterSeekerRequest extends FormRequest
             'gender' => ['nullable', 'integer', Rule::in(array_keys(UserConstants::getGenders()))],
             // 'headline' => ['required', 'string', 'max:255'],
             // 'desc' => ['required', 'string', 'max:500'],
-            'birthday' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'birthday' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 

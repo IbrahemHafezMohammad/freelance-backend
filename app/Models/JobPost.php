@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Constants\JobPostConstants;
 use App\Constants\PostSkillConstants;
+use App\Constants\SkillConstants;
+use App\Constants\UserConstants;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -93,7 +95,51 @@ class JobPost extends Model
         return $query;
     }
 
+    public static function listJobs($searchParams, $user)
+    {
+        $query = self::with(['skills'])
+            ->where('is_active', true)
+            ->status(JobPostConstants::STATUS_OPENED);
+
+        if (array_key_exists('title', $searchParams)) {
+
+            $query->title($searchParams['title']);
+        }
+
+        if (array_key_exists('skills', $searchParams)) {
+
+            $query->relatedSkills($searchParams['skills']);
+        }
+
+        if (array_key_exists('create_at', $searchParams)) {
+
+            $query->createAt($searchParams['create_at']);
+        }
+
+        if (array_key_exists('employer', $searchParams)) {
+
+            $query->relatedEmployer($searchParams['employer']);
+        }
+        return $query;
+    }
     // scopes 
+
+    public function scopeRelatedEmployer($query, $employer)
+    {
+        $query->whereHas('employer', function ($query) use ($employer) {
+            $query->whereHas('user', function ($query) use ($employer) {
+                $query->where(UserConstants::TABLE_NAME . '.user_name', 'LIKE', '%' . $employer . '%')
+                    ->orWhere(UserConstants::TABLE_NAME . '.name', 'LIKE', '%' . $employer . '%');
+            });
+        });
+    }
+
+    public function scopeRelatedSkills($query, $skills)
+    {
+        $query->whereHas('skills', function ($query) use ($skills) {
+            $query->whereIn(SkillConstants::TABLE_NAME . '.id', $skills);
+        });
+    }
 
     public function scopeDesc($query, $desc)
     {
@@ -102,7 +148,7 @@ class JobPost extends Model
 
     public function scopeTitle($query, $title)
     {
-        $query->where('desc', 'LIKE', '%' . $title . '%');
+        $query->where('title', 'LIKE', '%' . $title . '%');
     }
 
     public function scopeStatus($query, $status)
