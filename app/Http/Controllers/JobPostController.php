@@ -29,7 +29,7 @@ class JobPostController extends Controller
 
         $user = $request->user();
 
-        $posts = JobPost::listJobs($request->validated(), $user)->orderByDesc('id')->paginate(10);
+        $posts = JobPost::listJobs($request->validated(), $user)->orderByDesc('id')->paginate(2);
 
         return response()->json([
             'status' => true,

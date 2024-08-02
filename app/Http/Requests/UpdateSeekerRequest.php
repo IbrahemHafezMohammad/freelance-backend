@@ -33,6 +33,7 @@ class UpdateSeekerRequest extends FormRequest
             'headline' => ['nullable', 'string', 'max:255'],
             'desc' => ['nullable', 'string', 'max:500'],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
+            'resume' => ['nullable', 'string'],
         ];
     }
 

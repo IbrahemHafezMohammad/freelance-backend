@@ -78,10 +78,10 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
 
         Route::group(['middleware' => ['verified']], function () {
             Route::prefix('jobs')->group(function () {
-                Route::post('/list', [JobPostController::class, 'list']);
+                Route::get('/list', [JobPostController::class, 'list']);
             });
         });
-    }); 
+    });
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
@@ -89,12 +89,12 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
     Route::prefix('employer')->group(function () {
 
         Route::group(['middleware' => ['verified']], function () {
-            
+
             Route::prefix('jobs')->group(function () {
                 Route::post('/post', [JobPostController::class, 'post']);
             });
         });
-       
+
         Route::get('dashboard', [EmployerController::class, 'dashboard']);
     });
 });

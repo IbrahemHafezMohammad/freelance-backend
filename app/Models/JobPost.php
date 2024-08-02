@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobPost extends Model
 {
@@ -66,6 +67,11 @@ class JobPost extends Model
         return $this->belongsToMany(Skill::class, PostSkillConstants::TABLE_NAME);
     }
 
+    public function JobApplications(): HasMany
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
     // custom functions
 
     public static function getPosts($searchParams, $user)
@@ -97,9 +103,15 @@ class JobPost extends Model
 
     public static function listJobs($searchParams, $user)
     {
-        $query = self::with(['skills'])
+        $query = self::with([
+            'skills',
+            'employer.user' 
+        ])
             ->where('is_active', true)
-            ->status(JobPostConstants::STATUS_OPENED);
+            ->status(JobPostConstants::STATUS_OPENED)
+            ->whereHas('JobApplications', function ($query) use ($user) {
+                $query->where('seeker_id', '!=', $user->seeker->id);
+            });
 
         if (array_key_exists('title', $searchParams)) {
 
