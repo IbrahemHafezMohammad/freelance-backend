@@ -9,6 +9,7 @@ use App\Models\Admin;
 use Illuminate\Database\Seeder;
 use App\Constants\UserConstants;
 use App\Constants\GlobalConstants;
+use App\Models\Skill;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Spatie\Permission\Models\Permission;
@@ -64,5 +65,21 @@ class DatabaseSeeder extends Seeder
         $role->syncPermissions($permissions);
 
         $user1->assignRole('super-admin');
+
+        $skills = [
+            'web developer',
+            'network engineer',
+            'software engineer',
+            'UI designer',
+            'php developer',
+            'nodejs developer',
+            'react developer'
+        ];
+
+        foreach($skills as $skill) {
+            Skill::create([
+                'name' => $skill, 
+            ]);
+        }
     }
 }

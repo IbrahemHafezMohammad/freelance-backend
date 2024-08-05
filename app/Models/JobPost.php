@@ -24,6 +24,7 @@ class JobPost extends Model
         'is_active',
         'status',
         'image',
+        'application_count'
     ];
 
     private static $withoutAppends = [];
@@ -109,8 +110,8 @@ class JobPost extends Model
         ])
             ->where('is_active', true)
             ->status(JobPostConstants::STATUS_OPENED)
-            ->whereHas('JobApplications', function ($query) use ($user) {
-                $query->where('seeker_id', '!=', $user->seeker->id);
+            ->whereDoesntHave('JobApplications', function ($query) use ($user) {
+                $query->where('seeker_id', $user->seeker->id);
             });
 
         if (array_key_exists('title', $searchParams)) {

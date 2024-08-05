@@ -23,6 +23,8 @@ class ViewSeekerDashboard extends FormRequest
     {
         return [
             'title' => ['nullable', 'string'],
+            'created_at' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'status' => ['nullable', 'integer'],
         ];
     }
 }

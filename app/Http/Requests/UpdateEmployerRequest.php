@@ -5,10 +5,9 @@ namespace App\Http\Requests;
 use App\Rules\PhoneRegex;
 use Illuminate\Validation\Rule;
 use App\Constants\UserConstants;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSeekerRequest extends FormRequest
+class UpdateEmployerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,10 +29,7 @@ class UpdateSeekerRequest extends FormRequest
             'phone' => ['required', 'string', Rule::unique(UserConstants::TABLE_NAME, 'phone')->ignore($this->user->id), new PhoneRegex],
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'integer', Rule::in(array_keys(UserConstants::getGenders()))],
-            'headline' => ['nullable', 'string', 'max:255'],
-            'desc' => ['nullable', 'string', 'max:500'],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
-            'resume' => ['nullable', 'string'],
         ];
     }
 
@@ -44,15 +40,6 @@ class UpdateSeekerRequest extends FormRequest
             'gender' => $validated['gender'] ?? UserConstants::GENDER_UNKNOWN,
             'name' => $validated['name'],
             'birthday' => $validated['birthday'] ?? null,
-        ];
-    }
-
-    public function getSeekerData($validated)
-    {
-        return [
-            'headline' => $validated['headline'] ?? null,
-            'desc' => $validated['desc'] ?? null,
-            'resume' => $validated['resume'] ?? null,
         ];
     }
 }

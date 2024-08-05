@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('job_post_id')->constrained(JobPostConstants::TABLE_NAME);
             $table->text('resume');
             $table->text('message')->nullable();
+            $table->tinyInteger('status')->default(JobApplicationConstants::STATUS_PENDING);
             $table->timestamps();
         });
     }

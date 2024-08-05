@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\JobPost;
 use Illuminate\Http\Request;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
+use App\Mail\JobApplicationNotification;
 use App\Http\Requests\LoginSeekerRequest;
 use App\Http\Requests\UpdateSeekerRequest;
 use App\Http\Requests\ViewSeekerDashboard;
 use App\Http\Requests\RegisterSeekerRequest;
 use App\Services\WebService\WebRequestService;
+use App\Http\Requests\SeekerApplicationRequest;
 
 class SeekerController extends Controller
 {
@@ -188,15 +192,56 @@ class SeekerController extends Controller
         cache()->forget($cacheKey); // Delete the cache
     }
 
-    public function dashboard(ViewSeekerDashboard $request)
+    public function userData(Request $request)
     {
         $user = $request->user()->load(['seeker']);
-        $posts = JobApplication::getApplications($request->validated(), $user)->paginate(10);
 
         return response()->json([
             'status' => true,
             'user_data' => $user,
-            'applications' => $posts,
+        ]);
+    }
+
+    public function applications(ViewSeekerDashboard $request)
+    {
+        $user = $request->user()->load(['seeker']);
+
+        $applications = JobApplication::getApplications($request->validated(), $user)->paginate(10);
+
+        return response()->json([
+            'status' => true,
+            'applications' => $applications,
+        ]);
+    }
+
+    public function apply(SeekerApplicationRequest $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validated();
+
+        $exists = JobApplication::where('seeker_id', $user->seeker->id)->where('job_post_id', $validated['job_post_id'])->exists();
+        if ($exists) {
+            return response()->json([
+                'status' => false,
+                'message' => 'SEEKER_ALREADY_APPLIED',
+            ], 400);
+        }
+
+        $job_post = JobPost::findOrFail($validated['job_post_id']);
+
+        $application = JobApplication::create([
+            'seeker_id' => $user->seeker->id,
+            'job_post_id' => $validated['job_post_id'],
+            'resume' => $validated['resume'],
+            'message' => $validated['message'] ?? null,
+        ]);
+
+        Mail::to($job_post->employer->user->email)->queue(new JobApplicationNotification($user, $job_post, $application));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'APPLICATION_SUBMITTED_SUCCESSFULLY',
         ]);
     }
 }

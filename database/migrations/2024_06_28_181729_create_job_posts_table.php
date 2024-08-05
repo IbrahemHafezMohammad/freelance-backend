@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('is_active');
             $table->unsignedTinyInteger('status');
             $table->text('image')->nullable();
+            $table->integer('application_count')->default(0);
             $table->timestamps();
         });
     }

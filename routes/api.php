@@ -73,12 +73,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
 
     Route::prefix('seeker')->group(function () {
-        Route::get('dashboard', [SeekerController::class, 'dashboard']);
+        Route::get('dashboard', [SeekerController::class, 'userData']);
         Route::post('/update/{user}', [SeekerController::class, 'update']);
 
         Route::group(['middleware' => ['verified']], function () {
             Route::prefix('jobs')->group(function () {
                 Route::get('/list', [JobPostController::class, 'list']);
+                Route::post('/apply', [SeekerController::class, 'apply']);
+                Route::get('/applications', [SeekerController::class, 'applications']);
             });
         });
     });
@@ -87,15 +89,16 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.seeker']], function () {
 Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
 
     Route::prefix('employer')->group(function () {
+        Route::get('dashboard', [EmployerController::class, 'dashboard']);
+        Route::post('/update/{user}', [EmployerController::class, 'update']);
 
         Route::group(['middleware' => ['verified']], function () {
-
             Route::prefix('jobs')->group(function () {
                 Route::post('/post', [JobPostController::class, 'post']);
             });
         });
 
-        Route::get('dashboard', [EmployerController::class, 'dashboard']);
+        
     });
 });
 
