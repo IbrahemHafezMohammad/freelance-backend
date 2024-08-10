@@ -268,6 +268,8 @@ class EmployerController extends Controller
             $application->status = JobApplicationConstants::STATUS_ACCEPTED :
             $application->status = JobApplicationConstants::STATUS_REJECTED;
 
+        $application->save();
+        
         Mail::to($application->seeker->user->email)->queue(new ApplicationRespondNotification($application->seeker, $user->employer, $application->jobPost, $application));
 
         return response()->json([

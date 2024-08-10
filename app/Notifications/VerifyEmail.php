@@ -6,6 +6,7 @@ use App\Mail\VerifyEmailToken;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Crypt;
 
 class VerifyEmail extends Notification
 {
@@ -16,9 +17,8 @@ class VerifyEmail extends Notification
 
     public function toMail($notifiable)
     {
-        $token = $notifiable->getEmailForVerification();
-        Log::info('getEmailForVerification: ' . $token);
-        $token = sha1($token);
+        $token = Crypt::encrypt($notifiable->email . '|' . now()->timestamp);
+        Log::info('Encrypted verification token: ' . $token);
 
         // Send the custom mailable
         return (new VerifyEmailToken($token))
