@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $password = '1234qweR+';
+        $password = '123123';
         
         //add admins
         $user1 = User::create([
