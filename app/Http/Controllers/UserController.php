@@ -18,14 +18,16 @@ class UserController extends Controller
 
         try {
             // Decrypt the token
-            $decrypted = Crypt::decrypt($request->token);
+            $decryptedToken = base64_decode($request->token);
+            $decrypted = Crypt::decryptString($decryptedToken);
+
             Log::info('Decrypted verification token: ' . $decrypted);
 
             // Split the decrypted string into email and timestamp
             [$email, $timestamp] = explode('|', $decrypted);
 
             // Check if the token has expired (more than 1 hour old)
-            if (Carbon::createFromTimestamp($timestamp)->addSecond()->isPast()) {
+            if (Carbon::createFromTimestamp($timestamp)->addHour()->isPast()) {
                 return response()->json(['message' => 'VERIFICATION_TOKEN_EXPIRED'], 400);
             }
 

@@ -17,11 +17,12 @@ class VerifyEmail extends Notification
 
     public function toMail($notifiable)
     {
-        $token = Crypt::encrypt($notifiable->email . '|' . now()->timestamp);
-        Log::info('Encrypted verification token: ' . $token);
+        $token = Crypt::encryptString($notifiable->email . '|' . now()->timestamp);
+        $base64Token = base64_encode($token);
+        Log::info('Encrypted verification token: ' . $base64Token);
 
         // Send the custom mailable
-        return (new VerifyEmailToken($token))
+        return (new VerifyEmailToken($base64Token))
             ->to($notifiable->email);
     }
 }
