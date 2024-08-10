@@ -28,8 +28,8 @@ class JobPostConstants
     public static function getStatuses()
     {
         return [
-            self::STATUS_CLOSED => 'Closed',
-            self::STATUS_OPENED => 'Opened',
+            self::STATUS_CLOSED => 'CLOSED',
+            self::STATUS_OPENED => 'OPENED',
         ];
     }
 

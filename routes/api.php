@@ -95,6 +95,10 @@ Route::group(['middleware' => ['auth:sanctum', 'scope.employer']], function () {
         Route::group(['middleware' => ['verified']], function () {
             Route::prefix('jobs')->group(function () {
                 Route::post('/post', [JobPostController::class, 'post']);
+                Route::get('list/posts', [EmployerController::class, 'listPosts']);
+                Route::get('list/applications/{post}', [EmployerController::class, 'listApplications']);
+                Route::post('post/toggle/{post}', [EmployerController::class, 'togglePost']);
+                Route::post('application/respond', [EmployerController::class, 'respond']);
             });
         });
 

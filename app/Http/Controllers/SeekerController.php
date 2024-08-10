@@ -237,6 +237,10 @@ class SeekerController extends Controller
             'message' => $validated['message'] ?? null,
         ]);
 
+        $job_post->application_count  = $job_post->application_count + 1;
+
+        $job_post->save();
+        
         Mail::to($job_post->employer->user->email)->queue(new JobApplicationNotification($user, $job_post, $application));
 
         return response()->json([

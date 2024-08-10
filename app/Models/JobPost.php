@@ -75,44 +75,23 @@ class JobPost extends Model
 
     // custom functions
 
-    public static function getPosts($searchParams, $user)
-    {
-        $query = self::where('employer_id', $user->employer->id);
-
-        if (array_key_exists('desc', $searchParams)) {
-
-            $query->desc($searchParams['desc']);
-        }
-
-        if (array_key_exists('title', $searchParams)) {
-
-            $query->title($searchParams['title']);
-        }
-
-        if (array_key_exists('status', $searchParams)) {
-
-            $query->status($searchParams['status']);
-        }
-
-        if (array_key_exists('create_at', $searchParams)) {
-
-            $query->createAt($searchParams['create_at']);
-        }
-
-        return $query;
-    }
-
     public static function listJobs($searchParams, $user)
     {
         $query = self::with([
             'skills',
-            'employer.user' 
-        ])
-            ->where('is_active', true)
-            ->status(JobPostConstants::STATUS_OPENED)
-            ->whereDoesntHave('JobApplications', function ($query) use ($user) {
-                $query->where('seeker_id', $user->seeker->id);
-            });
+            'employer.user'
+        ])->where('is_active', true);
+
+        if ($user->seeker) {
+            $query->status(JobPostConstants::STATUS_OPENED)
+                ->whereDoesntHave('JobApplications', function ($query) use ($user) {
+                    $query->where('seeker_id', $user->seeker->id);
+                });
+        }
+
+        if ($user->employer) {
+            $query->where('employer_id', $user->employer->id);
+        }
 
         if (array_key_exists('title', $searchParams)) {
 
@@ -124,9 +103,9 @@ class JobPost extends Model
             $query->relatedSkills($searchParams['skills']);
         }
 
-        if (array_key_exists('create_at', $searchParams)) {
+        if (array_key_exists('created_at', $searchParams)) {
 
-            $query->createAt($searchParams['create_at']);
+            $query->createdAt($searchParams['created_at']);
         }
 
         if (array_key_exists('employer', $searchParams)) {
@@ -169,7 +148,7 @@ class JobPost extends Model
         $query->where('status', $status);
     }
 
-    public function scopeCreateAt($query, $created_at)
+    public function scopeCreatedAt($query, $created_at)
     {
         $query->where('created_at', '>=', $created_at);
     }

@@ -55,24 +55,25 @@ class JobApplication extends Model
 
     // custom function 
 
-    public static function getApplications($searchParams, $user)
+    public static function getApplications($searchParams, $user, $post = null)
     {
-        $query = self::with([
-            'jobPost' => function ($query) {
-                $query->with(['skills', 'employer.user']);
-            },
-        ]);
+        $query = self::query();
+
 
         if ($user->seeker) {
 
-            $query = $query->where('seeker_id', $user->seeker->id)
+            $query->with([
+                'jobPost' => function ($query) {
+                    $query->with(['skills', 'employer.user']);
+                },
+            ])->where('seeker_id', $user->seeker->id)
                 ->whereHas('jobPost', function ($query) {
                     $query->where('is_active', true);
                 });
-
         } elseif ($user->employer) {
 
-            $query = $query->where('employer_id', $user->employer->id);
+            $query->with(['seeker.user'])
+            ->where('job_post_id', $post->id);
         }
 
         if (array_key_exists('user_name', $searchParams)) {

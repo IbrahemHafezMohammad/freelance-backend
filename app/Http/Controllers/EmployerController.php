@@ -8,14 +8,21 @@ use App\Models\JobPost;
 use App\Models\Employer;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use App\Models\JobApplication;
 use Illuminate\Support\Facades\DB;
+use App\Constants\JobPostConstants;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
+use App\Constants\JobApplicationConstants;
 use App\Http\Requests\LoginEmployerRequest;
 use App\Http\Requests\UpdateEmployerRequest;
 use App\Http\Requests\ViewEmployerDashboard;
+use App\Mail\ApplicationRespondNotification;
 use App\Http\Requests\RegisterEmployerRequest;
 use App\Services\WebService\WebRequestService;
+use App\Http\Requests\ListEmployerPostsRequest;
+use App\Http\Requests\ApplicationRespindRequest;
 
 class EmployerController extends Controller
 {
@@ -29,7 +36,7 @@ class EmployerController extends Controller
             $employer = $user->employer()->create($employerData);
             $webRequestService = new WebRequestService($request);
             $user->loginHistory()->create(['ip' => $webRequestService->getIpAddress()]);
-            
+
             event(new Registered($user));
 
             DB::commit();
@@ -184,12 +191,88 @@ class EmployerController extends Controller
     public function dashboard(ViewEmployerDashboard $request)
     {
         $user = auth()->user()->load(['employer:id,user_id']);
-        $posts = JobPost::getPosts($request->validated(), $user)->paginate(10);
 
         return response()->json([
             'status' => true,
             'user_data' => $user,
+        ]);
+    }
+
+    public function listPosts(ListEmployerPostsRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = $request->user();
+
+        $posts = JobPost::listJobs($validated, $user)->orderByDesc('id')->paginate(10);
+
+        return response()->json([
+            'status' => true,
             'posts' => $posts,
+        ]);
+    }
+
+    public function listApplications(Request $request, JobPost $post)
+    {
+        $user = $request->user();
+
+        if ($post->employer_id !== $user->employer->id) {
+            return [];
+        }
+
+        $applications = JobApplication::getApplications($request->all(), $user, $post)->paginate(10);
+
+        return response()->json([
+            'status' => true,
+            'applications' => $applications,
+        ]);
+    }
+
+    public function togglePost(Request $request, JobPost $post)
+    {
+        $user = $request->user();
+
+        if ($post->employer_id !== $user->employer->id) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'NOT_ALLOWED',
+            ], 403);
+        }
+        $post->status === JobPostConstants::STATUS_CLOSED ? $post->status = JobPostConstants::STATUS_OPENED : $post->status = JobPostConstants::STATUS_CLOSED;
+
+        $post->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'STATUS_UPDATED',
+        ]);
+    }
+
+    public function respond(ApplicationRespindRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = $request->user();
+
+        $application = JobApplication::where('id', $validated['job_application_id'])->first();
+
+        if ($application->jobPost->employer->id !== $user->employer->id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'NOT_ALLOWED',
+            ], 403);
+        }
+
+        $validated['is_accepted'] ?
+            $application->status = JobApplicationConstants::STATUS_ACCEPTED :
+            $application->status = JobApplicationConstants::STATUS_REJECTED;
+
+        Mail::to($application->seeker->user->email)->queue(new ApplicationRespondNotification($application->seeker, $user->employer, $application->jobPost, $application));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'STATUS_CHANGED',
         ]);
     }
 }
